@@ -1,12 +1,16 @@
 require 'debugger'
+require 'colorize'
+
 class Board
 
   attr_accessor :board
 
-  def initialize
+  def initialize(place_pieces = true)
     @board = Array.new(8) { Array.new(8)}
-    set_pieces(:white)
-    set_pieces(:black)
+    if place_pieces
+      set_pieces(:white)
+      set_pieces(:black)
+    end
   end
 
   def set_pieces(color)
@@ -42,16 +46,17 @@ class Board
   end
 
   def render
-    render_string = "  0   1   2   3   4   5   6   7 \n"
-    board.each do |row|
+    render_string = "   0   1   2   3   4   5   6   7 \n"
+    letters = ("A".."I").to_a
+    board.each_with_index do |row,index|
+
       row_string = ""
       row.each do |piece|
         piece_char = piece.nil? ? ' ' : piece.render
         row_string << " |#{piece_char}|"
       end
-      render_string << "#{row_string}\n---------------------------------\n"
+      render_string << "#{letters[index]}#{row_string}\n---------------------------------\n"
     end
-    p "test Im rendering"
     puts render_string
   end
 
@@ -76,31 +81,48 @@ class Board
     end
   end
 
+  def dup
+    duped_board = Board.new(false)
+    each_piece do |piece|
+      duped_piece = piece.dup
+      duped_board[piece.position] = duped_piece
+      duped_piece.board = duped_board
+    end
+    duped_board
+  end
+
+  def move!(start_pos, end_pos)
+    piece = self[start_pos]
+    piece.position = end_pos
+    self[end_pos] = piece
+    self[start_pos] = nil
+    self
+  end
+
+
   def move(start_pos, end_pos)
-    start_row, start_col = start_pos
-    end_row, end_col = end_pos
+    self.dup.move!(start_pos, end_pos)
+  end
+
+
+  def make_move(start_pos, end_pos)
     #Add Exceptions later
     piece = self[start_pos]
-
-    p "#{piece.class} starting at at #{start_pos}"
-    p "#{piece.class} can move to #{piece.moves}"
-    if piece.moves && piece.moves.include?(end_pos)
-      piece.position = end_pos
-      board[end_row][end_col] = piece
-      self[start_pos] = nil
+    if piece && piece.moves && piece.valid_moves.include?(end_pos)
+      move!(start_pos, end_pos)
     else
-       puts "GOD DAMN IT"
-       puts piece.moves
-    end
-
-
-    p "#{piece.class} now at #{end_pos}"
-
-    if in_check?(piece.color)
-      move(end_pos, start_pos)
-      raise "DUH. CAN'T DO THAT."
+      raise 'WHAT THE DEUCE?!'
     end
     self
+  end
+
+  def checkmate?(color)
+    checkmate = true
+    each_piece do |piece|
+      next if piece.color != color
+      checkmate = false unless piece.valid_moves.empty?
+    end
+    checkmate
   end
 
 end

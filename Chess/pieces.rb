@@ -1,11 +1,13 @@
+require 'colorize'
+
 class Piece
 
   VERTS = [[1, 0], [-1,0], [0, 1], [0, -1]]
   DIAGS = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
   ALL_DIRS = VERTS + DIAGS
 
-  attr_accessor :position
-  attr_reader :color, :board
+  attr_accessor :position, :board
+  attr_reader :color
 
   def initialize(board, pos, color)
     @board = board
@@ -37,6 +39,29 @@ class Piece
     [old_pos[0] + move[0], old_pos[1] + move[1]]
   end
 
+  def other_color
+    self.color == :white ? :black : :white
+  end
+
+  def valid_moves
+    possible_moves = self.moves
+    possible_moves.reject do |move|
+      dup_board = board.move(position, move)
+      dup_board.in_check?(self.color)
+    end
+  end
+
+  def own_color?(test_color)
+    color == test_color
+  end
+
+  def to_s
+    "#{self.class} #{position} #{color}"
+  end
+
+  def inspect
+    self.to_s
+  end
 end
 
 
@@ -44,12 +69,12 @@ end
 class SlidingPiece < Piece
 
   def moves #returns ALL possible moves (length & direction)
-    valid_moves = []
+    possible_moves = []
     self.dirs.each do |direction|
       direction_moves = move_farther(direction)
-      valid_moves += direction_moves unless direction_moves.empty?
+      possible_moves += direction_moves
     end
-    valid_moves
+    possible_moves
   end
 
   def move_farther(direction)
@@ -101,13 +126,14 @@ end
 class SteppingPiece < Piece
 
   def moves(directions)
-    valid_moves = []
-    directions.map do |move|
+    possible_moves = []
+    directions.each do |move|
       coord = displacement(position, move)
-      valid_moves <<  coord if on_board?(coord) && !contains_own_color?(coord)
+      possible_moves <<  coord if on_board?(coord) && !contains_own_color?(coord)
     end
-    valid_moves
+    possible_moves
   end
+
 
 end
 
@@ -131,7 +157,7 @@ class King < SteppingPiece
   end
 
   def render
-    'W'
+    "\u2654"
   end
 end
 
@@ -139,12 +165,12 @@ class Pawn < Piece
 
   def moves
     #REFACTOR!!!
-    valid_moves = []
+    possible_moves = []
     if on_home?
       if color == :white
-        valid_moves << displacement(position, [2, 0])
+        possible_moves << displacement(position, [2, 0])
       else
-        valid_moves << displacement(position, [-2, 0])
+        possible_moves << displacement(position, [-2, 0])
       end
     end
 
@@ -157,16 +183,15 @@ class Pawn < Piece
     if color == :white
       diag_left = displacement(position, [1, -1])
       diag_right = displacement(position, [1, 1])
-      valid_moves << diag_left if capture_piece?(diag_left)
-      valid_moves << diag_right if capture_piece?(diag_right)
+      possible_moves << diag_left if capture_piece?(diag_left)
+      possible_moves << diag_right if capture_piece?(diag_right)
     else
       diag_left = displacement(position, [-1, -1])
       diag_right = displacement(position, [-1, 1])
-      valid_moves << diag_left if capture_piece?(diag_left)
-      valid_moves << diag_right if capture_piece?(diag_right)
+      possible_moves << diag_left if capture_piece?(diag_left)
+      possible_moves << diag_right if capture_piece?(diag_right)
     end
-
-    valid_moves << forward_move if on_board?(forward_move) && board[forward_move].nil?
+    possible_moves << forward_move if on_board?(forward_move) && board[forward_move].nil?
   end
 
   def on_home?
