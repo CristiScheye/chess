@@ -168,17 +168,20 @@ class Pawn < Piece
     possible_moves = []
     if on_home?
       if color == :white
-        possible_moves << displacement(position, [2, 0])
+        forward2 = displacement(position, [2, 0])
       else
-        possible_moves << displacement(position, [-2, 0])
+        forward2 = displacement(position, [-2, 0])
       end
+      possible_moves << forward2 if valid_forward?(forward2)
     end
 
     if color == :white
-      forward_move = displacement(position, [1, 0])
+      forward1 = displacement(position, [1, 0])
     else
-      forward_move = displacement(position, [-1, 0])
+      forward1 = displacement(position, [-1, 0])
     end
+
+    possible_moves << forward1 if valid_forward?(forward1)
 
     if color == :white
       diag_left = displacement(position, [1, -1])
@@ -191,7 +194,7 @@ class Pawn < Piece
       possible_moves << diag_left if capture_piece?(diag_left)
       possible_moves << diag_right if capture_piece?(diag_right)
     end
-    possible_moves << forward_move if on_board?(forward_move) && board[forward_move].nil?
+    possible_moves
   end
 
   def on_home?
@@ -201,5 +204,12 @@ class Pawn < Piece
   def render
     'P'
   end
+
+  def valid_forward?(next_position)
+      on_board?(next_position) &&
+      !capture_piece?(next_position) &&
+      !contains_own_color?(next_position)
+  end
+
 end
 

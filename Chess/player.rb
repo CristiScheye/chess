@@ -18,9 +18,7 @@ class HumanPlayer < Player
   end
 
   def get_move
-    puts "Your turn."
     start_pos, end_pos = gets.chomp.split(',')
-    #raise exception for bad input
     [start_pos, end_pos].map{|coords_string| translate(coords_string) }
   end
 

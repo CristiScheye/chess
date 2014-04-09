@@ -120,6 +120,7 @@ class Board
     checkmate = true
     each_piece do |piece|
       next if piece.color != color
+      p "#{piece.to_s} valid moves: #{piece.valid_moves}" unless piece.valid_moves.empty?
       checkmate = false unless piece.valid_moves.empty?
     end
     checkmate
