@@ -32,9 +32,10 @@ class HumanPlayer < Player
 
   def translate(coords_string)
     coords_string = coords_string.gsub(' ', '').downcase
-    row_char, col_num = coords_string.split("")
-    row_num = letter_map[row_char]
-    [row_num, col_num.to_i]
+    char, num = coords_string.split("")
+    col_num = letter_map[char]
+    row_num = num.to_i - 1
+    [row_num, col_num]
   end
 
   def make_translation_hash

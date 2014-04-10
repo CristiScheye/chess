@@ -62,6 +62,10 @@ class Piece
   def inspect
     self.to_s
   end
+
+  def render_color
+    color == :white ? :red : :blue
+  end
 end
 
 
@@ -98,7 +102,7 @@ class Bishop < SlidingPiece
   end
 
   def render
-    self.color == :white ? "\u2657" : "\u265D"
+    "\u265D"
   end
 end
 
@@ -109,7 +113,7 @@ class Rook < SlidingPiece
   end
 
   def render
-    self.color == :white ? "\u2656" : "\u265C"
+    "\u265C"
   end
 end
 
@@ -119,7 +123,7 @@ class Queen < SlidingPiece
   end
 
   def render
-    self.color == :white ? "\u2655" : "\u265B"
+    "\u265B"
   end
 end
 
@@ -147,7 +151,7 @@ class Knight < SteppingPiece
   end
 
   def render
-    self.color == :white ? "\u2658" : "\u265E"
+    "\u265E"
   end
 end
 
@@ -157,7 +161,7 @@ class King < SteppingPiece
   end
 
   def render
-    self.color == :white ? "\u2654" : "\u265A"
+    "\u265A"
   end
 end
 
@@ -202,7 +206,7 @@ class Pawn < Piece
   end
 
   def render
-    self.color == :white ? "\u2659" : "\u265F"
+    "\u265F"
   end
 
   def valid_forward?(next_position)

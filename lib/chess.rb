@@ -27,13 +27,13 @@ class Chess
     puts "Let's play Chess!"
 
     current_player = white_player
-    current_color = :white
+    current_color = current_player.color
 
     until board.checkmate?(current_color)
       board.render
 
       begin
-        puts "#{current_player.name}'s turn (#{current_color.to_s})".colorize(:white)
+        puts "#{current_player.name}'s turn".colorize(:white)
         start_pos, end_pos = current_player.get_move
 
         save_game if start_pos == "save"
@@ -45,14 +45,10 @@ class Chess
         retry
       end
       current_player = other_player(current_player)
-      current_color = other_color(current_color)
+      current_color = current_player.color
     end
 
     puts 'Checkmate! Game Over.'
-  end
-
-  def other_color(color)
-    color == :white ? :black : :white
   end
 
   def other_player(player)
