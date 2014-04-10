@@ -1,3 +1,5 @@
+require './error'
+
 class Player
   attr_accessor :name, :color
 
@@ -18,11 +20,14 @@ class HumanPlayer < Player
   end
 
   def get_move
-    start_pos, end_pos = gets.chomp.split(',')
-    if start_pos == "save"
+    move_input = gets.chomp.split(',')
+    if move_input == "save"
       return "save"
+    elsif move_input.size != 2
+      raise InputFormatError, 'Must enter start position, end position (e.g. b3, c3)'
+    else
+      move_input.map{|coords_string| translate(coords_string) }
     end
-    [start_pos, end_pos].map{|coords_string| translate(coords_string) }
   end
 
   def translate(coords_string)

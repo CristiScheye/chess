@@ -60,9 +60,6 @@ class Board
       end
       render_string << "#{letters[row_index]} ".colorize(:white)
       render_string << "#{row_string}\n"
-
-
-
     end
     puts render_string
   end
@@ -113,14 +110,15 @@ class Board
 
 
   def make_move(start_pos, end_pos)
-    #Add Exceptions later
     piece = self[start_pos]
-    if piece && piece.moves && piece.valid_moves.include?(end_pos)
-      move!(start_pos, end_pos)
+    if piece.nil?
+      raise InvalidMoveError, "Hmmm... no piece there."
+    elsif !piece.valid_moves.include?(end_pos)
+      raise InvalidMoveError, "WHAT THE DEUCE?! Can't move there."
     else
-      raise 'WHAT THE DEUCE?!'
+      move!(start_pos, end_pos)
     end
-    self
+    nil
   end
 
   def checkmate?(color)

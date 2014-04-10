@@ -1,6 +1,7 @@
 require './pieces'
 require './board'
 require './player'
+require './error'
 
 require 'debugger'
 require 'colorize'
@@ -39,8 +40,8 @@ class Chess
 
         board.make_move(start_pos, end_pos)
 
-      rescue
-        puts 'Invalid move. Try again. Format should be f3, g2'.colorize(:red)
+      rescue RuntimeError => e
+        puts e.message.colorize(:red)
         retry
       end
       current_player = other_player(current_player)
@@ -71,5 +72,4 @@ class Chess
     filename = ARGV.shift
     YAML::load_file(filename).play
   end
-
 end
