@@ -46,16 +46,23 @@ class Board
   end
 
   def render
-    render_string = "   0   1   2   3   4   5   6   7 \n"
+    render_string = "   0  1  2  3  4  5  6  7 \n".colorize(:white)
     letters = ("A".."I").to_a
-    board.each_with_index do |row,index|
+    board.each_with_index do |row,row_index|
 
       row_string = ""
-      row.each do |piece|
+      row.each_with_index do |piece, col_index|
         piece_char = piece.nil? ? ' ' : piece.render
-        row_string << " |#{piece_char}|"
+        piece_color = :white
+        piece_color = piece.color if piece
+        square_color = ((row_index + col_index).even? ? :light_red : :blue)
+        row_string << " #{piece_char} ".colorize(color: piece_color).colorize(background: square_color).bold
       end
-      render_string << "#{letters[index]}#{row_string}\n---------------------------------\n"
+      render_string << "#{letters[row_index]} ".colorize(:white)
+      render_string << "#{row_string}\n"
+
+
+
     end
     puts render_string
   end
@@ -120,7 +127,6 @@ class Board
     checkmate = true
     each_piece do |piece|
       next if piece.color != color
-      p "#{piece.to_s} valid moves: #{piece.valid_moves}" unless piece.valid_moves.empty?
       checkmate = false unless piece.valid_moves.empty?
     end
     checkmate
