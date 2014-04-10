@@ -22,7 +22,7 @@ class Chess
   end
 
   def play
-    puts "CHEESE!!!!!"
+    puts "Let's play Chess!"
 
     current_player = white_player
     @current_color = current_player.color
@@ -41,9 +41,6 @@ class Chess
           filename = save_time.strftime("chess_%F_%H%M%S.yml")
           save_game(filename)
           puts "Saved game as #{filename}. Keep playing or press CTRL+C to exit."
-          # current_player = other_player(current_player)
-          # @current_color = current_player.color
-          # p @current_color
         end
 
         board.make_move(start_pos, end_pos)
@@ -56,8 +53,7 @@ class Chess
       @current_color = current_player.color
     end
 
-    puts "Wait, did I say cheese?"
-    puts "I did mean cheese"
+    puts "Checkmate! Game Over."
   end
 
   def other_player(player)
@@ -76,18 +72,3 @@ class Chess
   end
 
 end
-
-if $PROGRAM_NAME == __FILE__
-
-  if ARGV.count == 0
-    game = Chess.new(HumanPlayer.new("jacky"), HumanPlayer.new("Jack the reap"))
-    game.play
-  else
-    Chess.load_game
-  end
-end
-
-game = Chess.new(HumanPlayer.new("jacky"), HumanPlayer.new("Jack the reap"))
-
-game.play
-
